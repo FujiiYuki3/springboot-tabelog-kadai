@@ -18,7 +18,7 @@ INSERT IGNORE INTO types(id, type_name_en, type_name_jp)VALUE(3, 'ROLE_ADMINSHOP
 INSERT IGNORE INTO types(id, type_name_en, type_name_jp)VALUE(4, 'ROLE_ADMINAPPS', 'アプリ管理者');
 
 --usersテーブル
-INSERT IGNORE INTO users(id, user_name, furigana, phone_number, email, password, user_type_id, enabled)VALUE(1, '田中　太郎', 'タナカ　タロウ', '090-1234-5678', 'taro.tanaka@example.com', '$2a$10$2JNjTwZBwo7fprL2X4sv.OEKqxnVtsVQvuXDkI8xVGix.U3W5B7CO', 2, true);
+INSERT IGNORE INTO users(id, user_name, furigana, phone_number, email, password, user_type_id, enabled)VALUE(1, '田中　太郎', 'タナカ　タロウ', '090-1234-5678', 'taro.tanaka@example.com', '$2a$10$2JNjTwZBwo7fprL2X4sv.OEKqxnVtsVQvuXDkI8xVGix.U3W5B7CO', 1, true);
 INSERT IGNORE INTO users(id, user_name, furigana, phone_number, email, password, user_type_id, enabled)VALUE(2, '田中　二郎', 'タナカ　ジロウ', '090-1234-6789', 'jiro.tanaka@example.com', '$2a$10$2JNjTwZBwo7fprL2X4sv.OEKqxnVtsVQvuXDkI8xVGix.U3W5B7CO', 1, true);
 INSERT IGNORE INTO users(id, user_name, furigana, phone_number, email, password, user_type_id, enabled)VALUE(3, '田中　三郎', 'タナカ　サブロウ', '090-1234-8765', 'saburo.tanaka@example.com', '$2a$10$2JNjTwZBwo7fprL2X4sv.OEKqxnVtsVQvuXDkI8xVGix.U3W5B7CO', 3, true);
 INSERT IGNORE INTO users(id, user_name, furigana, phone_number, email, password, user_type_id, enabled)VALUE(4, '田中　四郎', 'タナカ　シロウ', '090-1234-9876', 'shiro.tanaka@example.com', '$2a$10$2JNjTwZBwo7fprL2X4sv.OEKqxnVtsVQvuXDkI8xVGix.U3W5B7CO', 4, true);
@@ -41,7 +41,7 @@ INSERT IGNORE INTO shops(id, category_id, shop_name, furigana, alphabet, photo_n
 INSERT IGNORE INTO shops(id, category_id, shop_name, furigana, alphabet, photo_name, description, opening_hour, closing_hour, closed_day, minimum_budget, maximum_budget, address, phone_number, seats)VALUE(8, 5, 'しゃぶしゃぶ梓', 'シャブシャブアズサ', 'Shabu-Shabu Azusa', 'shop08.jpg', '出汁にこだわっております。', '17:00', '22:00', '日曜日', 5000, 10000, '愛知県名古屋市港区X-XX-OO', '052-111-1118', 50);
 INSERT IGNORE INTO shops(id, category_id, shop_name, furigana, alphabet, photo_name, description, opening_hour, closing_hour, closed_day, minimum_budget, maximum_budget, address, phone_number, seats)VALUE(9, 6, '蕎麦よしみつ', 'ソバヨシミツ', 'Soba Yoshimitsu', 'shop09.jpg', '肉蕎麦が売りとなっております。', '17:00', '06:00', '土曜日', 500, 2000, '愛知県名古屋市北区X-XX-OO', '052-111-1119', 5);
 INSERT IGNORE INTO shops(id, category_id, shop_name, furigana, alphabet, photo_name, description, opening_hour, closing_hour, closed_day, minimum_budget, maximum_budget, address, phone_number, seats)VALUE(10, 9, 'Dumbo', 'ダンボ', 'Dumbo', 'shop10.jpg', '昔懐かしい洋食店となっております。', '11:00', '21:00', '不定休', 500, 1500, '愛知県名古屋市南区X-XX-OO', '052-111-1110', 15);
-INSERT IGNORE INTO shops(id, category_id, shop_name, furigana, alphabet, photo_name, description, opening_hour, closing_hour, closed_day, minimum_budget, maximum_budget, address, phone_number, seats)VALUE(11, 11, 'Trim', 'トリム', 'Trim', 'shop11.jpg', '窯焼きのピザがおすすめです。', '12:00', '22:00', '水曜日', 2000, 5000, '愛知県名古屋市西区X-XX-OO', '052-111-1121', 25);
+INSERT IGNORE INTO shops(id, category_id, shop_name, furigana, alphabet, photo_name, description, opening_hour, closing_hour, closed_day, minimum_budget, maximum_budget, address, phone_number, seats)VALUE(11, 11, 'Trim', 'トリム', 'Trim', , '窯焼きのピザがおすすめです。', '12:00', '22:00', '水曜日', 2000, 5000, '愛知県名古屋市西区X-XX-OO', '052-111-1121', 25);
 
 --reservesテーブル
 INSERT IGNORE INTO reserves(id, user_id, shop_id, booking_date, booking_time, number_of_people)VALUE(1, 1, 1, '2024-06-01', '17:00', 4);
