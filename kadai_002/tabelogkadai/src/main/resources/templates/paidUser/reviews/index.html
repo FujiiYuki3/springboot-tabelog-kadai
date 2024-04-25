@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+	<head>
+		<div th:replace="~{fragment :: meta}"></div>
+		
+		<div th:replace="~{fragment :: styles}"></div>
+		
+		<title>レビュー一覧</title>
+	</head>
+	<body>
+		<div class="nagoyameshi-wrapper">
+			<!--ヘッダー-->
+			<div th:replace="~{fragment :: header}"></div>
+			
+			<div th:if="${createSuccessMessage}" class="alert alert-info">
+				<span th:text="${createSuccessMessage}"></span>
+			</div>
+			
+			<div th:if="${updateSuccessMessage}" class="alert alert-info">
+				<span th:text="${updateSuccessMessage}"></span>
+			</div>
+			
+			<div th:if="${deleteSuccessMessage}" class="alert alert-info">
+				<span th:text="${deleteSuccessMessage}"></span>
+			</div>
+			
+			<main>
+				<div class="container pt-4 pb-5 nagoyameshi-container">
+					<div class="row justify-content-center">
+						<nav class="my-3" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+							<ol class="breadcrumb mb-0">
+								<li class="breadcrumb-item"><a th:href="@{/login}">トップページ</a></li>
+								<li class="breadcrumb-item active" aria-current="page">レビュー一覧</li>
+							</ol>
+						</nav>
+						
+						<h1 class="mb-4 text-center">レビュー一覧</h1>
+						<div th:if="${createSuccessMessage}" class="alert alert-info">
+							<div th:text="${createSuccessMessage}"></div>
+						</div>
+						<div th:if="${updateSuccessMessage}" class="alert alert-info">
+							<div th:text="${updateSuccessMessage}"></div>
+						</div>
+						<div th:if="${deleteSuccessMessage}" class="alert alert-info">
+							<div th:text="${deleteSuccessMessage}"></div>
+						</div>
+						
+						<div>
+							<div class="row row-cols-lg-5 row-cols-2 g-3 mb-5">
+								<div class="col" th:each="review : ${newReview}">
+									<a th:href="@{/login/reviews/__${review.getId()}__}" class="link-dark nagoyameshi-card-link">
+										<div class="card h-100">
+											<img th:if="${review.getPhotoName()}" th:src="@{/storage/__${review.getPhotoName()}__}" class="w-100" alt="レストラン画像">
+											<img th:unless="${review.getPhotoName()}" th:src="@{/images/noImage.png}" class="w-100" alt="NO IMAGE">
+											<div class="card-body">
+												<h3 class="card-title mb-3" th:text="${review.getShop().getShopName()}"></h3>
+											</div>
+											<p class="card-text mb-2">
+												<span th:text="${review.getStars()}"></span>
+											</p>
+											<p class="card-text mb-2">
+												<span th:text="${review.getReviewComment()}"></span>
+											</p>
+										</div>
+									</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				<!--ページネーション-->
+				<div th:if="${newReview.getTotalPages()>1}" class="d-flex justify-content-center">
+					<nav aria-label="レビュー一覧ページ">
+						<ul class="pagination">
+							<li class="page-item">
+								<span th:if="${newReview.isFirst()}" class="page-link disabled">前</span>
+								<a th:unless="${newReview.isFirst()}" th:href="@{/login/reviews(page = ${newReview.getNumber()-1})}" class="page-link nagoyameshi-page-link">前</a>
+							</li>
+							<li th:each="i : ${#numbers.sequence(0, newReview.getTotalPages()-1)}" class="page-item">
+								<span th:if="${i == newReview.getNumber()}" th:text="${i + 1}" class="page-link active nagoyameshi-active"></span>
+								<a th:unless="${i == newReview.getNumber()}" th:href="@{/login/reviews(page = ${i})}" th:text="${i+1}" class="page-link nagoyameshi-page-link"></a>
+							</li>
+							<li class="page-item">
+								<span th:if="${newReview.isLast()}" class="page-link disabled">次</span>
+								<a th:unless="${newReview.isLast()}" th:href="@{/login/reviews(page = ${newReview.getNumber()+1})}" class="page-link nagoyameshi-page-link">次</a>
+							</li>
+						</ul>
+					</nav>
+				</div>
+				
+				<!--フッター-->
+				<div th:replace="~{fragment :: footer}"></div>
+				
+				<!--Bootstrap-->
+				<div th:replace="~{fragment :: scripts}"></div>
+			</main>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+	<head>
+		<div th:replace="~{fragment :: meta}"></div>
+		
+		<div th:replace="~{fragment :: styles}"></div>
+		
+		<title>店舗情報編集・削除ページ</title>
+	</head>
+	<body>
+		<div class="nagoyameshi-wrapper">
+			<!--ヘッダー-->
+			<div th:replace="~{fragment :: header}"></div>
+			
+			<main>
+				<div class="container pt-4 pb-5 nagoyameshi-container">
+					<div class="row justify-content-center">
+						<div class="col-xl-5 col-lg-6 col-md-8">
+							<nav class="my-3" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+								<ol class="breadcrumb mb-0">
+									<li class="breadcrumb-item"><a th:href="@{/login}">トップページ</a></li>
+									<li class="breadcrumb-item"><a th:href="@{/login/shops}">店舗一覧</a></li>
+									<li class="breadcrumb-item active" aria-current="page">店舗情報編集・削除</li>
+								</ol>
+							</nav>
+							
+							<h1 class="mb-4 text-center">店舗情報編集・削除</h1>
+							
+							<form method="post" th:action="@{/login/shops/__${shop.getId()}__/update}" th:object="${shopEditForm}" enctype="multipart/form-data">
+								<input type="hidden" th:field="*{id}">
+								
+								<div class="form-group row mb-3">
+									<div class="col-md-4">
+										<label for="categoryName" class="col-form-label text-md-left fw-bold">
+											<div class="d-flex align-items-center">
+												<span class="me-1">カテゴリ</span>
+												<span class="badge bg-danger">必須</span>
+											</div>
+										</label>
+									</div>
+									<div class="col-md-8">
+										<div th:if="${#fields.hasErrors('categoryName')}" class="text-danger small mb-2" th:errors="*{categoryName}"></div>
+										<select name="categoryName" th:field="*{categoryName}">
+											<option value="" hidden>選択してください</option>
+											<option th:each="category : ${categoryList}" th:value="${category.categoryName}" th:text="${category.categoryName}" th:selected="${category.categoryName == selectedValue}"></option>
+										</select>
+									</div>
+								</div>
+								
+								<div class="form-group row mb-3">
+									<div class="col-md-4">
+										<label for="shopName" class="col-form-label text-md-left fw-bold">
+											<div class="d-flex align-items-center">
+												<span class="me-1">店名</span>
+												<span class="badge bg-danger">必須</span >
+											</div>
+										</label>
+									</div>
+									<div class="col-md-8">
+										<div th:if="${#fields.hasErrors('shopName')}" class="text-danger small mb-2" th:errors="*{shopName}"></div>
+										<input type="text" class="form-control" th:field="*{shopName}" autocomplete="name" autofocus placeholder="寿司　常">
+									</div>
+								</div>
+								
+								<div class="form-group row mb-3">
+									<div class="col-md-4">
+										<label for="furigana" class="col-form-label text-md-left fw-bold">
+											<div class="d-flex align-items-center">
+												<span class="me-1">フリガナ</span>
+												<span class="badge bg-danger">必須</span>
+											</div>
+										</label>
+									</div>
+									<div class="col-md-8">
+										<div th:if="${#fields.hasErrors('furigana')}" class="text-danger small mb-2" th:errors="*{furigana}"></div>
+										<input type="text" class="form-control" th:field="*{furigana}" placeholder="スシ　ツネ">
+									</div>
+								</div>
+								
+								<div class="form-group row mb-3">
+									<div class="col-md-4">
+										<label for="alphabet" class="col-form-label text-md-left fw-bold">
+											<div class="d-flex align-items-center">
+												<span class="me-1">ローマ字</span>
+												<span class="badge bg-danger">必須</span>
+											</div>
+										</label>
+									</div>
+									<div class="col-md-8">
+										<div th:if="${#fields.hasErrors('alphabet')}" class="text-danger small mb-2" th:errors="*{alphabet}"></div>
+										<input type="text" class="form-control" th:field="*{alphabet}" placeholder="Sushi Tsune">
+									</div>
+								</div>
+								
+								<div class="form-group row mb-3">
+									<div class="col-md-4">
+										<label for="imageFile" class="col-form-label text-md-left fw-bold">
+											<div class="d-flex align-items-center">
+												<span class="me-1">写真</span>
+											</div>
+										</label>
+									</div>
+									<div class="col-md-8">
+										<div th:if="${#fields.hasErrors('photoName')}" class="text-danger small mb-2" th:errors="*{photoName}"></div>
+										<input type="file" class="form-control" th:field="*{photoName}">
+									</div>
+								</div>
+								
+								<!--選択された画像の表示場所-->
+								<div class="row" id="imagePreview"></div>
+								
+								<div class="form-group row mb-3">
+									<div class="col-md-4">
+										<label for="description" class="col-form-label text-md-left fw-bold">
+											<div class="d-flex align-items-center">
+												<span class="me-1">説明</span>
+												<span class="badge bg-danger">必須</span>
+											</div>
+										</label>
+									</div>
+									<div class="col-md-8">
+										<div th:if="${#fields.hasErrors('description')}" class="text-danger small mb-2" th:errors="*{description}"></div>
+										<input type="text" class="form-control" th:field="*{description}" placeholder="説明を入力してください。">
+									</div>
+								</div>
+								
+								<div class="form-group row mb-3">
+									<div class="col-md-4">
+										<label for="openingHour" class="col-form-label text-md-left fw-bold">
+											<div class="d-flex align-items-center">
+												<span class="me-1">開店時間</span>
+												<span class="badge bg-danger">必須</span>
+											</div>
+										</label>
+									</div>
+									<div class="col-md-8">
+										<div th:if="${#fields.hasErrors('openingHour')}" class="text-danger small mb-2" th:errors="*{openingHour}"></div>
+										<input type="text" class="form-control" th:field="*{openingHour}" placeholder="08:00:00">
+									</div>
+								</div>
+								
+								<div class="form-group row mb-3">
+									<div class="col-md-4">
+										<label for="closingHour" class="col-form-label text-md-left fw-bold">
+											<div class="d-flex align-items-center">
+												<span class="me-1">閉店時間</span>
+												<span class="badge bg-danger">必須</span>
+											</div>
+										</label>
+									</div>
+									<div class="col-md-8">
+										<div th:if="${#fields.hasErrors('closingHour')}" class="text-danger small mb-2" th:errors="*{closingHour}"></div>
+										<input type="text" class="form-control" th:field="*{closingHour}" placeholder="23:00:00">
+									</div>
+								</div>
+								
+								<div class="form-group row mb-3">
+									<div class="col-md-4">
+										<label for="closedDay" class="col-form-label text-md-left fw-bold">
+											<div class="d-flex align-items-center">
+												<span class="me-1">定休日</span>
+												<span class="badge bg-danger">必須</span>
+											</div>
+										</label>
+									</div>
+									<div class="col-md-8">
+										<div th:if="${#fields.hasErrors('closedDay')}" class="text-danger small mb-2" th:errors="*{closedDay}"></div>
+										<input type="text" class="form-control" th:field="*{closedDay}" placeholder="月曜日">
+									</div>
+								</div>
+								
+								<div class="form-group row mb-3">
+									<div class="col-md-4">
+										<label for="minimumBudget" class="col-form-label text-md-left fw-bold">
+											<div class="d-flex align-items-center">
+												<span class="me-1">予算額（最小）</span>
+												<span class="badge bg-danger">必須</span>
+											</div>
+										</label>
+									</div>
+									<div class="col-md-8">
+										<div th:if="${#fields.hasErrors('minimumBudget')}" class="text-danger small mb-2" th:errors="*{minimumBudget}"></div>
+										<input type="text" class="form-control" th:field="*{minimumBudget}" placeholder="1000">
+									</div>
+								</div>
+								
+								<div class="form-group row mb-3">
+									<div class="col-md-4">
+										<label for="maximumBudget" class="col-form-label text-md-left fw-bold">
+											<div class="d-flex align-items-center">
+												<span class="me-1">予算額（最大）</span>
+												<span class="badge bg-danger">必須</span>
+											</div>
+										</label>
+									</div>
+									<div class="col-md-8">
+										<div th:if="${#fields.hasErrors('maximumBudget')}" class="text-danger small mb-2" th:errors="*{maximumBudget}"></div>
+										<input type="text" class="form-control" th:field="*{maximumBudget}" placeholder="10000">
+									</div>
+								</div>
+								
+								<div class="form-group row mb-3">
+									<div class="col-md-4">
+										<label for="address" class="col-form-label text-md-left fw-bold">
+											<div class="d-flex align-items-center">
+												<span class="me-1">住所</span>
+												<span class="badge bg-danger">必須</span>
+											</div>
+										</label>
+									</div>
+									<div class="col-md-8">
+										<div th:if="${#fields.hasErrors('address')}" class="text-danger small mb-2" th:errors="*{address}"></div>
+										<input type="text" class="form-control" th:field="*{address}" placeholder="愛知県名古屋市港区X-XX-XX">
+									</div>
+								</div>
+								
+								<div class="form-group row mb-3">
+									<div class="col-md-4">
+										<label for="phoneNumber" class="col-form-label text-md-left fw-bold">
+											<div class="d-flex align-items-center">
+												<span class="me-1">電話番号</span>
+												<span class="badge bg-danger">必須</span>
+											</div>
+										</label>
+									</div>
+									<div class="col-md-8">
+										<div th:if="${#fields.hasErrors('phoneNumber')}" class="text-danger small mb-2" th:errors="*{phoneNumber}"></div>
+										<input type="text" class="form-control" th:field="*{phoneNumber}" autocomplete="tel-national" placeholder="052-000-0000">
+									</div>
+								</div>
+								
+								<div class="form-group row mb-3">
+									<div class="col-md-4">
+										<label for="seats" class="col-form-label text-md-left fw-bold">
+											<div class="d-flex align-items-center">
+												<span class="me-1">席数</span>
+												<span class="badge bg-danger">必須</span>
+											</div>
+										</label>
+									</div>
+									<div class="col-md-8">
+										<div th:if="${#fields.hasErrors('seats')}" class="text-danger small mb-2" th:errors="*{seats}"></div>
+										<input type="text" class="form-control" th:field="*{seats}" placeholder="100">
+									</div>
+								</div>
+								
+								<button type="submit" class="btn text-white shadow-sm w-50 nagoyameshi-btn">変更する</button>
+							</form>
+							
+							<a href="#" data-bs-toggle="modal" th:data-bs-target="${'#deleteShopModalLabel'}" class="nagoyameshi-link-danger">削除</a>
+							
+							<!--削除用モーダル-->
+							<div class="modal fade" th:id="${'deleteShopModalLabel'}" tabindex="-1" th:aria-labelledby="${'deleteShopModalLabel'}">
+								<div class="modal-dialog">
+									<div class="modal-content">
+										<div class="modal-header">
+											<h5 class="modal-title" th:id="${'deleteShopModalLabel'}" th:text="${'店舗情報を削除してもよろしいですか？'}"></h5>
+											<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
+										</div>
+										<div class="modal-footer">
+											<form method="post" th:action="@{/login/shops/__${shop.getId()}__/delete}">
+												<button type="submit" class="btn nagoyameshi-btn-danger text-white shadow-sm">削除</button>
+											</form>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				<!--フッター-->
+				<div th:replace="~{fragment :: footer}"></div>
+				
+				<!--Bootstrap-->
+				<div th:replace="~{fragment :: scripts}"></div>
+			</main>
+		</div>
+	</body>
+</html>

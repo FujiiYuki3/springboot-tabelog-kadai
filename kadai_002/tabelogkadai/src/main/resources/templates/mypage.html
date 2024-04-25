@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+	<head>
+		<div th:replace="~{fragment :: meta}"></div>
+		
+		<div th:replace="~{fragment :: styles}"></div>
+		
+		<title>マイページ</title>
+	</head>
+	<body>
+		<div class="nagoyameshi-wrapper">
+			<!--ヘッダー-->
+			<div th:replace="~{fragment :: header}"></div>
+			
+			<div th:if="${updateSuccessMessage}" class="alert alert-info">
+				<span th:text="${updateSuccessMessage}"></span>
+			</div>
+			
+			<div th:if="${param.upgrade}" class="alert alert-info">
+				有料会員にアップグレードしました。
+			</div>
+			
+			<main>
+				<div class="container pt-4 pb-5 nagoyameshi-container">
+					<div class="row justify-content-center">
+						<div class="col-xl-5 col-lg-6 col-md-8">
+							<nav class="my-3" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+								<ol class="breadcrumb mb-0">
+									<li class="breadcrumb-item"><a th:href="@{/login}">トップページ</a></li>
+									<li class="breadcrumb-item active" aria-current="page">マイページ</li>
+								</ol>
+							</nav>
+							
+							<!--会員情報-->
+							<h1 class="mb-3 text-center">会員情報</h1>
+							
+							<div class="d-flex justify-content-end align-items-end mb-3">
+								<div>
+									<a th:href="@{/login/mypage/edit}">編集</a>
+								</div>
+							</div>
+							
+							<div th:if="${successMessage}">
+								<span th:text="${successMessage}"></span>
+							</div>
+							
+							<!--会員情報-->
+							<div class="container mb-4">
+								<div class="row pb-2 mb-2 border-bottom">
+									<div class="col-4">
+										<span class="fw-bold">氏名</span>
+									</div>
+									
+									<div class="col">
+										<span th:text="${user.getUserName()}"></span>
+									</div>
+								</div>
+								
+								<div class="row pb-2 mb-2 border-bottom">
+									<div class="col-4">
+										<span class="fw-bold">フリガナ</span>
+									</div>
+									
+									<div class="col">
+										<span th:text="${user.getFurigana()}"></span>
+									</div>
+								</div>
+								
+								<div class="row pb-2 mb-2 border-bottom">
+									<div class="col-4">
+										<span class="fw-bold">電話番号</span>
+									</div>
+									
+									<div class="col">
+										<span th:text="${user.getPhoneNumber()}"></span>
+									</div>
+								</div>
+								
+								<div class="row pb-2 mb-2 border-bottom">
+									<div class="col-4">
+										<span class="fw-bold">メールアドレス</span>
+									</div>
+									
+									<div class="col">
+										<span th:text="${user.getEmail()}"></span>
+									</div>
+								</div>
+							</div>
+							
+							<!--サブスク料の決済-->
+							<div sec:authorize="hasRole('ROLE_FREEUSER')">
+								<span class="fw-bold">有料会員にアップグレードすると以下の機能を使用し、<br>より快適にご使用いただけます。<br>なお、サブスク料金は月々300円となっております。</span><br>
+								<span>・お気に入り機能<br>⇒気になるお店や、また行きたいお店などを登録することができ、<br>一覧で見ることができるためお店探しの手間が省けます！</span><br>
+								<span>・予約機能<br>⇒行きたいお店にアプリ上で予約することが可能となっており、<br>並ばずにお店を利用することができます！</span><br>
+								<span>・レビュー機能<br>⇒お店を利用した感想を記録することができ、<br>また他の人の参考やお店の方のモチベーションにもなるのでぜひご活用ください！</span>
+								<div class="form-group d-flex justify-content-center my-4">
+									<button id="paymentButton" class="nagoyameshi-btn">決済しアップグレードする</button>
+								</div>
+							</div>
+							
+							<!--決済方法の変更及びサブスクキャンセル-->
+							<div class="d-flex justify-content-end align-items-end mb-3">
+								<div sec:authorize="hasRole('ROLE_PAIDUSER')">
+									<a th:href="@{/login/mypage/subscription}">決済情報の変更及びサブスクリプションのキャンセルページ</a>
+								</div>
+							</div>
+							
+						</div>
+					</div>
+				</div>
+				
+				<!--フッター-->
+				<div th:replace="~{fragment :: footer}"></div>
+				
+				<!--Bootstrap-->
+				<div th:replace="~{fragment :: scripts}"></div>
+			</main>
+		</div>
+		
+		<script src="https://js.stripe.com/v3"></script>
+		<script th:inline="javascript">
+			const sessionId = /*[[${sessionId}]]*/"sessionId";       
+		</script>
+		<script th:src="@{/js/stripe.js}"></script>  
+	</body>
+</html>

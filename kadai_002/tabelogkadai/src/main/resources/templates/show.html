@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+	<head>
+		<div th:replace="~{fragment :: meta}"></div>
+		
+		<div th:replace="~{fragment :: styles}"></div>
+		
+		<!--Flatpickr-->
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+		
+		<title>店舗詳細</title>
+	</head>
+	<body>
+		<div class="nagoyameshi-wrapper">
+			<!--ヘッダー-->
+			<div th:replace="~{fragment :: header}"></div>
+			
+			<main>
+				<div class="container pt-4 pb-5 nagoyameshi-container">
+					<div class="row justify-content-center">
+						<div class="col-xxl-9 col-xl-10 col-lg-11">
+							<nav class="mb-4" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+								<ol class="breadcrumb mb-0">
+									<li class="breadcrumb-item"><a th:href="@{/login}">トップページ</a></li>
+									<li class="breadcrumb-item active" aria-current="page">店舗詳細</li>
+								</ol>
+							</nav>
+							
+							<!--有料会員限定お気に入り機能-->
+							<div sec:authorize="hasRole('ROLE_PAIDUSER')">
+								<div th:unless="${success}">
+									<a th:href="@{/login/__${shop.getId()}__/create}" onclick="event.preventDefault(); document.getElementById('favoriteRegisterForm').submit();">&#9825　お気に入り追加</a>
+									<form id="favoriteRegisterForm" style="display: none;" method="post" th:action="@{/login/__${shop.getId()}__/create}" th:object="${favoriteRegisterForm}">
+										<input type="hidden" name="userId" th:field="*{userId}">
+										<input type="hidden" name="shopId" th:field="*{shopId}">
+										<button type="submit">&#9825　お気に入り追加</button>
+									</form>
+								</div>
+								
+								<div th:if="${success}">
+									<a th:href="@{/login/__${shop.getId()}__/delete}" onclick="event.preventDefault(); document.getElementById('favoriteRegisterForm').submit();">&#9829　お気に入り解除</a>
+									<form id="favoriteRegisterForm" style="display: none;" method="post" th:action="@{/login/__${shop.getId()}__/delete}">
+										<button type="submit">&#9829　お気に入り解除</button>
+									</form>
+								</div>
+							</div>
+							
+							<!--有料会員限定レビュー投稿機能-->
+							<div sec:authorize="hasRole('ROLE_PAIDUSER')">
+								<div th:if="${created}">
+									<a th:href="@{/login/__${shop.getId()}__/review}">レビュー投稿</a>
+								</div>
+							</div>
+							
+							<h1 class="mb-4 text-center" th:text="${shop.getShopName()}"></h1>
+							
+							<div th:if="${errorMessage}" class="alert alert-danger">
+								<span th:text="${errorMessage}"></span>
+							</div>
+							
+							<div class="container">
+								<div class="row">
+									<div class="col-lg-8 container mb-4">
+										<div class="mb-3">
+											<img th:if="${shop.getPhotoName()}" th:src="@{/storage/__${shop.getPhotoName()}__}" class="w-100" alt="レストラン画像">
+											<img th:unless="${shop.getPhotoName()}" th:src="@{/images/noImage.png}" class="w-100" alt="NO IMAGE">
+										</div>
+										
+										<div class="row pb-2 mb-2 border-bottom">
+											<div class="col-4">
+												<span class="fw-bold">店名</span>
+											</div>
+											
+											<div class="col">
+												<span th:text="${shop.getShopName()}"></span>
+											</div>
+										</div>
+										
+										<div class="row pb-2 mb-2 border-bottom">
+											<div class="col-4">
+												<span class="fw-bold">カテゴリ</span>
+											</div>
+											
+											<div class="col">
+												<span th:text="${shop.getCategory().getCategoryName()}"></span>
+											</div>
+										</div>
+										
+										<div class="row pb-2 mb-2 border-bottom">
+											<div class="col-4">
+												<span class="fw-bold">フリガナ</span>
+											</div>
+											
+											<div class="col">
+												<span th:text="${shop.getFurigana()}"></span>
+											</div>
+										</div>
+										
+										<div class="row pb-2 mb-2 border-bottom">
+											<div class="col-4">
+												<span class="fw-bold">説明</span>
+											</div>
+											
+											<div class="col">
+												<span class="nagoyameshi-pre-wrap" th:text="${shop.getDescription()}"></span>
+											</div>
+										</div>
+										
+										<div class="row pb-2 mb-2 border-bottom">
+											<div class="col-4">
+												<span class="fw-bold">開店時間</span>
+											</div>
+											
+											<div class="col">
+												<span th:text="${shop.getOpeningHour()}"></span>
+											</div>
+										</div>
+										
+										<div class="row pb-2 mb-2 border-bottom">
+											<div class="col-4">
+												<span class="fw-bold">閉店時間</span>
+											</div>
+											
+											<div class="col">
+												<span th:text="${shop.getClosingHour()}"></span>
+											</div>
+										</div>
+										
+										<div class="row pb-2 mb-2 border-bottom">
+											<div class="col-4">
+												<span class="fw-bold">定休日</span>
+											</div>
+											
+											<div class="col">
+												<span th:text="${shop.getClosedDay()}"></span>
+											</div>
+										</div>
+										
+										<div class="row pb-2 mb-2 border-bottom">
+											<div class="col-4">
+												<span class="fw-bold">予算</span>
+											</div>
+											
+											<div class="col">
+												<span th:text="${shop.getMinimumBudget()} + '円～' + ${shop.getMaximumBudget()} + '円'"></span>
+											</div>
+										</div>
+										
+										<div class="row pb-2 mb-2 border-bottom">
+											<div class="col-4">
+												<span class="fw-bold">住所</span>
+											</div>
+											
+											<div class="col">
+												<span th:text="${shop.getAddress()}"></span>
+											</div>
+										</div>
+										
+										<div class="row pb-2 mb-2 border-bottom">
+											<div class="col-4">
+												<span class="fw-bold">電話番号</span>
+											</div>
+											
+											<div class="col">
+												<span th:text="${shop.getPhoneNumber()}"></span>
+											</div>
+										</div>
+										
+										<div class="row pb-2 mb-2 border-bottom">
+											<div class="col-4">
+												<span class="fw-bold">席数</span>
+											</div>
+											
+											<div class="col">
+												<span th:text="${shop.getSeats()}"></span>
+											</div>
+										</div>
+										
+										<div class="row pb-2 mb-2 border-bottom">
+											<div  th:each="newReview : ${newReview}">
+												<div class="col-md-8">
+													<div class="card-body">
+														<h3 th:text="${newReview.getStars()}"></h3>
+													</div>
+													<div class="card-body">
+														<h3 th:text="${newReview.getReviewComment()}"></h3>
+													</div>
+													<div class="card-body">
+														<h3 th:text="${newReview.getPhotoName()}"></h3>
+													</div>
+												</div>
+											</div>
+										</div>
+										
+										<!--有料会員限定予約機能-->
+										<div sec:authorize="hasRole('ROLE_PAIDUSER')" class="col-lg-4 px-0 ps-lg-4 mb-4">
+											<div class="card">
+												<div class="card-body">
+													<form method="get" th:action="@{/login/__${shop.getId()}__/reservations/input}" th:object="${reservationInputForm}">
+														<div class="form-group mb-2">
+															<label for="bookingDate" class="col-form-label text-md-left fw-bold">予約日時</label>
+															<div th:if="${#fields.hasErrors('bookingDateTime')}" class="text-danger small mb-2" th:errors="*{bookingDateTime}"></div>
+															<input type="text" class="form-control" th:field="*{bookingDateTime}">
+														</div>
+														
+														<div class="form-group mb-4">
+															<label for="numberOfPeople" class="col-form-label text-md-left fw-bold">予約人数</label>
+															<div th:if="${#fields.hasErrors('numberOfPeople')}" class="text-danger small mb-2" th:errors="*{numberOfPeople}"></div>
+															<input type="text" class="form-control" th:field="*{numberOfPeople}">
+														</div>
+														
+														<div class="form-group">
+															<button type="submit" class="btn text-white shadow-sm w-100 nagoyameshi-btn">予約する</button>
+														</div>
+													</form>
+												</div>
+											</div>
+										</div>
+										
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				<!--フッター-->
+				<div th:replace="~{fragment :: footer}"></div>
+				
+				<!--Bootstrap-->
+				<div th:replace="~{fragment :: scripts}"></div>
+			</main>
+		</div>
+		
+		<!--Flatpickr-->
+		<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+		<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ja.js"></script>
+		<script th:src="@{/js/flatpickr.js}"></script>
+	</body>
+</html>

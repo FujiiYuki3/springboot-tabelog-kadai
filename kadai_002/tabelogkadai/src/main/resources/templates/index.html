@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+	<head>
+		<div th:replace="~{fragment :: meta}"></div>
+		
+		<div th:replace="~{fragment :: styles}"></div>
+		
+		<title>トップページ</title>
+	</head>
+	<body>
+		<div th:if="${param.loggedIn}" class="alert alert-info">
+			ログインしました。
+		</div>
+		
+		<div th:if="${successMessage}" class="alert alert-info">
+			<span th:text="${successMessage}"></span>
+		</div>
+		
+		<div class="nagoyameshi-wrapper">
+			<!--ヘッダー-->
+			<div th:replace="~{fragment :: header}"></div>
+			
+			<main>
+				
+				<!--無料会員トップページ-->
+				<div class="container pt-4 pb-5 nagoyameshi-container" sec:authorize="hasRole('ROLE_FREEUSER')">
+					<div class="row justify-content-center">
+						<nav class="my-3" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+							<ol class="breadcrumb mb-0">
+								<li class="breadcrumb-item active" aria-current="page">トップページ</li>
+							</ol>
+						</nav>
+						
+						<div class="d-flex justify-content-center">
+							<form method="get" th:action="@{/login}" class="mb-5 nagoyameshi-search-form">
+								<div class="input-group">
+									<input type="text" class="form-control" name="shopKeyword" th:value="${shopKeyword}" placeholder="店名">
+									<button type="submit" class="btn text-white shadow-sm nagoyameshi-btn">検索</button>
+									<select name="categoryKeyword" class="form-control form-select" th:value="${categoryKeyword}">
+										<option value="" hidden>カテゴリ名</option>
+										<option th:each="category : ${categoryList}" th:value="${category.categoryName}" th:text="${category.categoryName}" th:selected="${category.categoryName == selectedValue}"></option>
+									</select>
+									<button type="submit" class="btn text-white shadow-sm nagoyameshi-btn">検索</button>
+								</div>
+							</form>
+						</div>
+						<div class="card mb-3">
+							<div class=class="card-header">予算から探す</div>
+							<div class="card-body">
+								<form method="get" th:action="@{/login}" class="w-100">
+									<div class="form-group mb-3">
+										<select class="form-control form-select" name="price">
+											<option value="" hidden>選択してください</option>
+											<option value="1000" th:selected="${price == 1000}">1,000円以内</option>
+											<option value="2000" th:selected="${price == 2000}">2,000円以内</option>
+											<option value="3000" th:selected="${price == 3000}">3,000円以内</option>
+											<option value="4000" th:selected="${price == 4000}">4,000円以内</option>
+											<option value="5000" th:selected="${price == 5000}">5,000円以内</option>
+											<option value="6000" th:selected="${price == 6000}">6,000円以内</option>
+											<option value="7000" th:selected="${price == 7000}">7,000円以内</option>
+											<option value="8000" th:selected="${price == 8000}">8,000円以内</option>
+											<option value="9000" th:selected="${price == 9000}">9,000円以内</option>
+											<option value="10000" th:selected="${price == 10000}">10,000円以内</option>
+											<option value="15000" th:selected="${price == 15000}">15,000円以内</option>
+										</select>
+									</div>
+									<div class="form-group">
+										<button type="submit" class="nagoyameshi-btn">検索</button>
+									</div>
+								</form>
+							</div>
+						</div>
+						<div class="col">
+							<div class="d-flex justify-content-between flex-wrap">
+								<form method="get" th:action="@{/login}" class="mb-3 nagoyameshi-sort-box">
+									<input th:if="${shopKeyword}" type="hidden" name="shopKeyword" th:value="${shopKeyword}">
+									<input th:if="${categoryKeyword}" type="hidden" name="categoryKeyword" th:value="${categoryKeyword}">
+									<input th:if="${price}" type="hidden" name="price" th:value="${price}">
+									<select class="form-select form-select-sm" name="order" onchange="this.form.submit();">
+										<option value="createdAtDesc" th:selected="${order == 'createdAtDesc' || order == null}">新着順</option>
+										<option value="minimumBudgetAsc" th:selected="${order == 'minimumBudgetAsc'}">価格が安い順</option>
+										<option value="furiganaAsc" th:selected="${order == 'furiganaAsc'}">五十音順</option>
+									</select>
+								</form>
+							</div>
+							
+							<div>
+								<div class="row row-cols-lg-5 row-cols-2 g-3 mb-5">
+									<div class="col" th:each="shop : ${shopPage}">
+										<a th:href="@{/login/__${shop.getId()}__}" class="link-dark nagoyameshi-card-link">
+											<div class="card h-100">
+												<img th:if="${shop.getPhotoName()}" th:src="@{/storage/__${shop.getPhotoName()}__}" class="w-100" alt="レストラン画像">
+												<img th:unless="${shop.getPhotoName()}" th:src="@{/images/noImage.png}" class="w-100" alt="NO IMAGE">
+												<div class="card-body">
+													<h3 class="card-title mb-3" th:text="${shop.getShopName()}"></h3>
+													<p class="card-text mb-2">
+														<span th:text="${shop.getCategory().getCategoryName()}"></span>
+													</p>
+												</div>
+											</div>
+										</a>
+									</div>
+								</div>
+							</div>
+						</div>
+						
+						<!--ページネーション-->
+						<div th:if="${shopPage.getTotalPages()>1}" class="d-flex justify-content-center">
+							<nav aria-label="店舗一覧ページ">
+								<ul class="pagination">
+									<li class="page-item">
+										<span th:if="${shopPage.isFirst()}" class="page-link disabled">前</span>
+										<a th:unless="${shopPage.isFirst()}" th:href="@{/login(page = ${shopPage.getNumber()-1}, shopKeyword = ${shopKeyword}, categoryKeyword = ${categoryKeyword}, price = ${price}, order = ${order})}" class="page-link nagoyameshi-page-link">前</a>
+									</li>
+									<li class="page-item" th:each="i : ${#numbers.sequence(0, shopPage.getTotalPages()-1)}">
+										<span th:if="${i == shopPage.getNumber()}" th:text="${i + 1}" class="page-link active nagoyameshi-active"></span>
+										<a th:unless="${i == shopPage.getNumber()}" th:href="@{/login(page = ${i}, shopKeyword = ${shopKeyword}, categoryKeyword = ${categoryKeyword}, price = ${price}, order = ${order})}" th:text="${i+1}" class="page-link nagoyameshi-page-link"></a>
+									</li>
+									<li class="page-item">
+										<span th:if="${shopPage.isLast()}" class="page-link disabled">次</span>
+										<a th:unless="${shopPage.isLast()}" th:href="@{/login(page = ${shopPage.getNumber()+1}, shopKeyword = ${shopKeyword}, categoryKeyword = ${categoryKeyword}, price = ${price}, order = ${order})}" class="page-link nagoyameshi-page-link">次</a>
+									</li>
+								</ul>
+							</nav>
+						</div>
+					</div>
+				</div>
+				
+				<!--有料会員トップページ-->
+				<div class="container pt-4 pb-5 nagoyameshi-container" sec:authorize="hasRole('ROLE_PAIDUSER')">
+					<div class="row justify-content-center">
+						<nav class="my-3" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+							<ol class="breadcrumb mb-0">
+								<li class="breadcrumb-item active" aria-current="page">トップページ</li>
+							</ol>
+						</nav>
+						
+						<div class="d-flex justify-content-center">
+							<form method="get" th:action="@{/login}" class="mb-5 nagoyameshi-search-form">
+								<div class="input-group">
+									<input type="text" class="form-control" name="shopKeyword" th:value="${shopKeyword}" placeholder="店名">
+									<button type="submit" class="btn text-white shadow-sm nagoyameshi-btn">検索</button>
+									<select name="categoryKeyword" class="form-control form-select" th:value="${categoryKeyword}">
+										<option value="" hidden>カテゴリ名</option>
+										<option th:each="category : ${categoryList}" th:value="${category.categoryName}" th:text="${category.categoryName}" th:selected="${category.categoryName == selectedValue}"></option>
+									</select>
+									<button type="submit" class="btn text-white shadow-sm nagoyameshi-btn">検索</button>
+								</div>
+							</form>
+						</div>
+						<div class="card mb-3">
+							<div class=class="card-header">予算から探す</div>
+							<div class="card-body">
+								<form method="get" th:action="@{/login}" class="w-100">
+									<div class="form-group mb-3">
+										<select class="form-control form-select" name="price">
+											<option value="" hidden>選択してください</option>
+											<option value="1000" th:selected="${price == 1000}">1,000円以内</option>
+											<option value="2000" th:selected="${price == 2000}">2,000円以内</option>
+											<option value="3000" th:selected="${price == 3000}">3,000円以内</option>
+											<option value="4000" th:selected="${price == 4000}">4,000円以内</option>
+											<option value="5000" th:selected="${price == 5000}">5,000円以内</option>
+											<option value="6000" th:selected="${price == 6000}">6,000円以内</option>
+											<option value="7000" th:selected="${price == 7000}">7,000円以内</option>
+											<option value="8000" th:selected="${price == 8000}">8,000円以内</option>
+											<option value="9000" th:selected="${price == 9000}">9,000円以内</option>
+											<option value="10000" th:selected="${price == 10000}">10,000円以内</option>
+											<option value="15000" th:selected="${price == 15000}">15,000円以内</option>
+										</select>
+									</div>
+									<div class="form-group">
+										<button type="submit" class="nagoyameshi-btn">検索</button>
+									</div>
+								</form>
+							</div>
+						</div>
+						<div class="col">
+							<div class="d-flex justify-content-between flex-wrap">
+								<form method="get" th:action="@{/login}" class="mb-3 nagoyameshi-sort-box">
+									<input th:if="${shopKeyword}" type="hidden" name="shopKeyword" th:value="${shopKeyword}">
+									<input th:if="${categoryKeyword}" type="hidden" name="categoryKeyword" th:value="${categoryKeyword}">
+									<input th:if="${price}" type="hidden" name="price" th:value="${price}">
+									<select class="form-select form-select-sm" name="order" onchange="this.form.submit();">
+										<option value="createdAtDesc" th:selected="${order == 'createdAtDesc' || order == null}">新着順</option>
+										<option value="minimumBudgetAsc" th:selected="${order == 'minimumBudgetAsc'}">価格が安い順</option>
+										<option value="furiganaAsc" th:selected="${order == 'furiganaAsc'}">五十音順</option>
+									</select>
+								</form>
+							</div>
+							
+							<div>
+								<div class="row row-cols-lg-5 row-cols-2 g-3 mb-5">
+									<div class="col" th:each="shop : ${shopPage}">
+										<a th:href="@{/login/__${shop.getId()}__}" class="link-dark nagoyameshi-card-link">
+											<div class="card h-100">
+												<img th:if="${shop.getPhotoName()}" th:src="@{/storage/__${shop.getPhotoName()}__}" class="w-100" alt="レストラン画像">
+												<img th:unless="${shop.getPhotoName()}" th:src="@{/images/noImage.png}" class="w-100" alt="NO IMAGE">
+												<div class="card-body">
+													<h3 class="card-title mb-3" th:text="${shop.getShopName()}"></h3>
+													<p class="card-text mb-2">
+														<span th:text="${shop.getCategory().getCategoryName()}"></span>
+													</p>
+												</div>
+											</div>
+										</a>
+									</div>
+								</div>
+							</div>
+						</div>
+						
+						<!--ページネーション-->
+						<div th:if="${shopPage.getTotalPages()>1}" class="d-flex justify-content-center">
+							<nav aria-label="店舗一覧ページ">
+								<ul class="pagination">
+									<li class="page-item">
+										<span th:if="${shopPage.isFirst()}" class="page-link disabled">前</span>
+										<a th:unless="${shopPage.isFirst()}" th:href="@{/login(page = ${shopPage.getNumber()-1}, shopKeyword = ${shopKeyword}, categoryKeyword = ${categoryKeyword}, price = ${price}, order = ${order})}" class="page-link nagoyameshi-page-link">前</a>
+									</li>
+									<li class="page-item" th:each="i : ${#numbers.sequence(0, shopPage.getTotalPages()-1)}">
+										<span th:if="${i == shopPage.getNumber()}" th:text="${i + 1}" class="page-link active nagoyameshi-active"></span>
+										<a th:unless="${i == shopPage.getNumber()}" th:href="@{/login(page = ${i}, shopKeyword = ${shopKeyword}, categoryKeyword = ${categoryKeyword}, price = ${price}, order = ${order})}" th:text="${i+1}" class="page-link nagoyameshi-page-link"></a>
+									</li>
+									<li class="page-item">
+										<span th:if="${shopPage.isLast()}" class="page-link disabled">次</span>
+										<a th:unless="${shopPage.isLast()}" th:href="@{/login(page = ${shopPage.getNumber()+1}, shopKeyword = ${shopKeyword}, categoryKeyword = ${categoryKeyword}, price = ${price}, order = ${order})}" class="page-link nagoyameshi-page-link">次</a>
+									</li>
+								</ul>
+							</nav>
+						</div>
+					</div>
+				</div>
+				
+				<!--店舗管理者トップページ-->
+				<div class="container pt-4 pb-5 nagoyameshi-container" sec:authorize="hasRole('ROLE_ADMINSHOP')">
+					<div class="row justify-content-center">
+						<div class="col-xl-5 col-lg-6 col-md-8">
+							<nav class="my-3" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+								<ol class="breadcrumb mb-0">
+									<li class="breadcrumb-item active" aria-current="page">トップページ</li>
+								</ol>
+							</nav>
+						
+							<h1 class="mb-3 text-center">会員情報</h1>
+							
+							<div class="d-flex justify-content-end align-items-end mb-3">
+								<div>
+									<a th:href="@{/login/mypage/edit}">編集</a>
+								</div>
+							</div>
+								
+							<!--会員情報-->
+							<div class="container mb-4">
+								<div class="row pb-2 mb-2 border-bottom">
+									<div class="col-4">
+										<span class="fw-bold">氏名</span>
+									</div>
+									
+									<div class="col">
+										<span th:text="${user.getUserName()}"></span>
+									</div>
+								</div>
+								
+								<div class="row pb-2 mb-2 border-bottom">
+									<div class="col-4">
+										<span class="fw-bold">フリガナ</span>
+									</div>
+									
+									<div class="col">
+										<span th:text="${user.getFurigana()}"></span>
+									</div>
+								</div>
+								
+								<div class="row pb-2 mb-2 border-bottom">
+									<div class="col-4">
+										<span class="fw-bold">電話番号</span>
+									</div>
+									
+									<div class="col">
+										<span th:text="${user.getPhoneNumber()}"></span>
+									</div>
+								</div>
+								
+								<div class="row pb-2 mb-2 border-bottom">
+									<div class="col-4">
+										<span class="fw-bold">メールアドレス</span>
+									</div>
+									
+									<div class="col">
+										<span th:text="${user.getEmail()}"></span>
+									</div>
+								</div>
+								
+								<div class="row pb-2 mb-2 border-bottom">
+									<div class="col-4">
+										<span class="fw-bold">ユーザータイプ</span>
+									</div>
+									
+									<div class="col">
+										<span th:text="${user.getType().getTypeNameJp()}"></span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				<!--アプリ管理者トップページ-->
+				<div class="container pt-4 pb-5 nagoyameshi-container" sec:authorize="hasRole('ROLE_ADMINAPPS')">
+					<div class="row justify-content-center">
+						<div class="col-xl-5 col-lg-6 col-md-8">
+							<nav class="my-3" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+								<ol class="breadcrumb mb-0">
+									<li class="breadcrumb-item active" aria-current="page">トップページ</li>
+								</ol>
+							</nav>
+							
+							<h1 class="mb-3 text-center">会員情報</h1>
+							
+							<div class="d-flex justify-content-end align-items-end mb-3">
+								<div>
+									<a th:href="@{/login/mypage/edit}">編集</a>
+								</div>
+							</div>
+								
+							<div class="container mb-4">
+								<div class="row pb-2 mb-2 border-bottom">
+									<div class="col-4">
+										<span class="fw-bold">氏名</span>
+									</div>
+									
+									<div class="col">
+										<span th:text="${user.getUserName()}"></span>
+									</div>
+								</div>
+								
+								<div class="row pb-2 mb-2 border-bottom">
+									<div class="col-4">
+										<span class="fw-bold">フリガナ</span>
+									</div>
+									
+									<div class="col">
+										<span th:text="${user.getFurigana()}"></span>
+									</div>
+								</div>
+								
+								<div class="row pb-2 mb-2 border-bottom">
+									<div class="col-4">
+										<span class="fw-bold">電話番号</span>
+									</div>
+									
+									<div class="col">
+										<span th:text="${user.getPhoneNumber()}"></span>
+									</div>
+								</div>
+								
+								<div class="row pb-2 mb-2 border-bottom">
+									<div class="col-4">
+										<span class="fw-bold">メールアドレス</span>
+									</div>
+									
+									<div class="col">
+										<span th:text="${user.getEmail()}"></span>
+									</div>
+								</div>
+								
+								<div class="row pb-2 mb-2 border-bottom">
+									<div class="col-4">
+										<span class="fw-bold">ユーザータイプ</span>
+									</div>
+									
+									<div class="col">
+										<span th:text="${user.getType().getTypeNameJp()}"></span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				<!--フッター-->
+				<div th:replace="~{fragment :: footer}"></div>
+				
+				<!--Bootstrap-->
+				<div th:replace="~{fragment :: scripts}"></div>
+			</main>
+		</div>
+	</body>
+</html>
