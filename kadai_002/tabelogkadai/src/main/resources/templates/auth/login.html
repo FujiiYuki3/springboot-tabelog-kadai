@@ -41,6 +41,11 @@
 							<div th:if="${param.error}" class="alert alert-danger">
 								メールアドレスまたはパスワードが正しくありません。
 							</div>
+
+							<div>
+								<h2 class="mb-4 text-center">ユーザーID：taro.tanaka@example.com</h2>
+								<h2 class="mb-4 text-center">パスワード：password</h2>
+							</div>
 							
 							<form th:action="@{/}" method="post">
 								<div class="form-group mb-3">
