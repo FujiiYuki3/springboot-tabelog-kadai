@@ -138,7 +138,7 @@ public class StripeService {
 			String subscriptionId = subscription.getId();
 			
 			cardRepository.deleteBySubscriptionId(subscriptionId);
-			userService.typeDowngrade(subscriptionId);
+			//userService.typeDowngrade(subscriptionId);
 		});
 	}
 

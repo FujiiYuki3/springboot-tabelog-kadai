@@ -4,7 +4,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.tabelogkadai.entity.Card;
 import com.example.tabelogkadai.entity.Type;
 import com.example.tabelogkadai.entity.User;
 import com.example.tabelogkadai.form.PasswordResetForm;
@@ -106,7 +105,7 @@ public class UserService {
 	}
 	
 	//サブスク解約機能
-		@Transactional
+		/*@Transactional
 		public void typeDowngrade(String subscriptionId) {
 			Card card = cardRepository.findBySubscriptionId(subscriptionId);
 			User user = card.getUser();
@@ -115,6 +114,6 @@ public class UserService {
 			user.setType(type);
 			
 			userRepository.save(user);
-		}
+		}*/
 
 }
