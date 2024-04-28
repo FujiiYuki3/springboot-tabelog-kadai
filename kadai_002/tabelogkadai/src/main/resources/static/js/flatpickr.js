@@ -2,7 +2,7 @@ let maxDate = new Date();
 maxDate = maxDate.setMonth(maxDate.getMonth() + 3);
 
 let minDate = new Date();
-minDate = minDate.setDate('today' + 1);
+minDate = minDate.setDate(minDate.getDate() + 1);
 
 flatpickr('#bookingDateTime', {
 	enableTime: true,
