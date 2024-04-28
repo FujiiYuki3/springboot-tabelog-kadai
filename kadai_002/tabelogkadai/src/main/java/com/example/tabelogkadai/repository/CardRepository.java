@@ -11,6 +11,6 @@ public interface CardRepository extends JpaRepository<Card, Integer> {
 	public Card findBySubscriptionId(String subscriptionId);
 	
 	@Transactional
-	public Card deleteBySubscriptionId(String subscriptionId);
+	public Integer deleteBySubscriptionId(String subscriptionId);
 
 }
